@@ -11,16 +11,17 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 
 # Setting my root directory to where I have my /data folder etc. (easier for me, but personalise to your own way of working)
-knitr::opts_knit$set(root.dir = "/Users/mie/OneDrive/Skole/Cognition and Communication/Methods2_resources/classes")
-
+knitr::opts_knit$set(root.dir = "/Users/mie/OneDrive/Skole/Methods 2 The General Linear Model/Methods2_resources/classes")
 
 ```
 
 ### Setup
 ```{r}
 # Make sure this guy is installed/updated (if you've alreadygot rstanarm installed, you just need to load it in using either library() or p_load() as below)
-install.packages("rstanarm")
+#install.packages("rstanarm")
 library(rstanarm)
+
+
 
 # Load the rest
 library(pacman)
@@ -82,20 +83,58 @@ These first exercises are about learning what simulating data is for.
 
 ## Ex. 0.a): In 1-2 sentences (discuss w group or reflect on your own): What does it mean to simulate data?
 
+creating data; perhaps following a specific distribution or something.
+
+
 ## Ex. 0.b): Specify some amount of data points (n), some mean and some sd, and use rnorm() to simulate this amount of data points based off of the mean and sd you've set. 
 ```{r}
-set.seed(1998) # setting a seed (in the best year ever??) - this way, even though it's random, you'll get reproducible results next time you run this with this seed
+set.seed(2003) # setting a seed (in the best year ever??) - this way, even though it's random, you'll get reproducible results next time you run this with this seed
 
 # rnorm() works like: my_simulated_data <- rnorm(n, mean, sd) - now you go!
 
-# your code here
+
+
+# your code here  -  stimulating my data
+n <- 20
+mean <- 7
+sd <- 3
+
+myNormalData <- rnorm(n, mean, sd)
+
+
 ```
 
 ## Ex. 0.c) Talk with your group and note in 1-2 sentences: What do we know of the data drawn from the rnorm()? 
 
+we know that it follows a normal distribution and than the bulk of the data is around the mean of 7, plus that it its standard deviation.
+
+
 ## Ex. 0.d) Data are worth 10000% more if visualised, so let's visualise. Using ggplot, make a histogram visualising the data you simulated.
 
+```{r}
+
+# my histogram of my normalised data
+hist(myNormalData)
+
+
+```
+
+
+
+
 ## Ex. 0.e) Calculate the empirical mean and empirical sd (just fancy words for "calculate the mean and sd of the simulated data") - are they different from the ones you've set? and why might that be?
+
+```{r}
+
+# find the mean and the sd by calculating them with their respective functions
+
+mean(myNormalData)  # gives a mean of 7.86, which differs by 0.86 from what the value I gave for the stimulation of the data
+
+sd(myNormalData)  # gives a sd of 2.77, which differs by 0.23 from what the value I gave for the stimulation of the data
+
+
+```
+
 
 ## Exercises from ROS
 ### Ex. 1.2
@@ -104,6 +143,105 @@ Sketching a regression model and data: Figure 1.1b shows data corresponding to t
 
 #### Ex. 1.2.a) Sketch hypothetical data with the same range of x but corresponding to the line y = 30 + 10x with residual standard deviation 3.9.
 * If you're not sure how to approach this exercise, try and go by the piecemeal hint-intruction in the bottom of this doc :)
+
+```{r}
+
+# 1) saves the coefficients
+
+intercept <- 30
+
+slope <- 10
+
+
+# 2) makes the x-values of the range
+
+x <- seq(0, 4)
+
+
+
+# 3) calculates y - still without the error, and therefore it's y for the straight regression line
+
+y_noError <- slope * x + intercept
+
+
+
+# 4) add random error to the line above
+
+normalisedError <- rnorm(30, 0, 3.9)
+
+y_withError <- slope * x + intercept + normalisedError
+
+
+
+# 5) preparing the data for plotting by putting the x- and y-values in a dataframe to prepare for plotting w. ggplot
+
+preparedData <- data.frame(x, y_withError)
+
+
+
+# 6) plotting it
+
+# Basic plot with ggplot2
+ggplot(preparedData,aes(x = x, y = y_withError)) +
+  geom_point() +# Add points
+  labs(title = "my Data Plotted") +
+  theme_minimal() +  # Use a minimal theme
+  theme(
+    plot.title = element_text(hjust = 0.5),  # Center the title
+    plot.subtitle = element_text(hjust = 0.5)  # Center the subtitle
+  ) +
+  geom_smooth(method = "lm", se = FALSE, color = "orange")  # Add a linear regression line
+
+
+
+
+# 7) fit and review regression model: fit a linear regression model to the generated data by stan_glm() + see how closely the estimated parameters match the ones used to generate the data
+
+# fitting a linear regression model to the generated data
+linearRegressionModel <- stan_glm(y_withError ~ x, data=preparedData)
+
+plot(preparedData$x, preparedData$y_withError)
+
+abline(coef(linearRegressionModel), col="purple")
+
+print(linearRegressionModel)
+
+
+# looks at how closely the estimated parameters match the ones used to generate the data
+
+  # the estimated data: 
+
+
+  # the generated data: 
+
+
+
+
+
+
+
+
+
+plot(hibbs$growth, hibbs$vote, xlab="Average recent growth in personal income",
+ylab="Incumbent party's vote share")
+
+# Estimate regression y = a + bx + error
+M1 <- stan_glm(vote ~ growth, data=hibbs)
+
+# Add a fitted line to the graph
+abline(coef(M1), col="gray") # needs to be run with the plot() code above - running the whole chunk is the easiest way
+
+# Display the fitted model
+print(M1)
+
+
+#### 7) Optional: Fit and review a regression model: As an additional step, you can fit a linear regression model to the generated data using stan_glm() or any other fitting function to see how closely the estimated parameters match the ones used to generate the data.
+```
+
+
+
+
+
 
 #### Ex. 1.2.b) Sketch hypothetical data with the same range of x but corresponding to the line y = 30 + 10x with residual standard deviation 10.
 
@@ -168,14 +306,14 @@ The question says: Sketch hypothetical data with the same range of x but corresp
 
 #### 1) First, define the regression model parameters (intercept, slope, error) (hint: just make variables called 'intercept' and so on and define the number)
 
-#### 3) Generate X values in the specified range using seq()
+#### 2) Generate X values in the specified range using seq()
 
-#### 4) Calculate y values based on the given regression and your newly created x-values without the error term, which gives you the y get the perfect fit line
+#### 3) Calculate y values based on the given regression and your newly created x-values without the error term, which gives you the y get the perfect fit line
 
-#### 5) Add random error to the line we fit above: we can introduce variability by adding some normally distributed random errors to the y values. This can be done using rnorm() as in the 0-exercises, with mean 0 and standard deviation equal to the residual standard deviation (3.9) for instance.
+#### 4) Add random error to the line we fit above: we can introduce variability by adding some normally distributed random errors to the y values. This can be done using rnorm() as in the 0-exercises, with mean 0 and standard deviation equal to the residual standard deviation (3.9) for instance.
 
-#### 6) Prepare data for plotting: get the x-values and y-values in a dataframe to prepare for plotting w. ggplot
+#### 5) Prepare data for plotting: get the x-values and y-values in a dataframe to prepare for plotting w. ggplot
 
-#### 7) Now, plot to check it out
+#### 6) Now, plot to check it out
 
-#### 8) Optional: Fit and review a regression model: As an additional step, you can fit a linear regression model to the generated data using stan_glm() or any other fitting function to see how closely the estimated parameters match the ones used to generate the data. 
+#### 7) Optional: Fit and review a regression model: As an additional step, you can fit a linear regression model to the generated data using stan_glm() or any other fitting function to see how closely the estimated parameters match the ones used to generate the data. 
