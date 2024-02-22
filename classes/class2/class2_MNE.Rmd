@@ -134,6 +134,28 @@ y_f2_ew <- f2(xValues, mu = 0, tau = 3)
       # f1 with sigma (sd) - the lower the value of sigma, the more precise, the smaller the width
 
 
+
+
+
+
+
+
+### confusion Hi
+
+t = 2
+mean = 7
+x = 8.4
+
+part1_2 <- sqrt(t/(2*pi))
+
+part2_2 <- (-t*(x-mean)^2)/2
+
+f2 <- part1_2*exp(1)^(part2_2)
+
+f2
+
+
+
 ```
 
 
@@ -166,26 +188,25 @@ Loops can be good for simulating. And they are cool. Let's practice is a bit.
 I've made an example below. Make your own example below it. If you have no ideas for what to code in your for loop, here's an example you can try to code up:
 - A simple for loop could be for each i in 1:20, print i if i is above 3
 ```{r}
-t = 2
-mean = 7
-x = 8.4
-
-part1_2 <- sqrt(t/(2*pi))
-
-part2_2 <- (-t*(x-mean)^2)/2
-
-f2 <- part1_2*exp(1)^(part2_2)
-
-f2
-
-
-
 # Here's a simple for-loop
 for (i in 1:10){ # For each i in 1:10...
   print(i+5)    # Do this..
 }
 
+
+
+
 # your simple loop here
+
+for (i in 1:20)
+{
+  if(i > 3)
+  {
+    print(i)
+  }
+}
+
+
 ```
 
 I've also made an example of a while loop below. Make your own example below it. If you have no ideas for what to code in your while loop, here's an example you can try to code up:
@@ -198,7 +219,29 @@ while (number < 10){ # While the number is below 10, do the following
   number = number + 1
 }
 
+
+
+
+
 # your simple while-loop here
+
+hungry = TRUE
+iceCreamEaten = 0
+
+while(hungry == TRUE)
+{
+  iceCreamEaten = iceCreamEaten + 1
+  
+  if (iceCreamEaten >= 3)
+  {
+    hungry = FALSE
+    
+    print(iceCreamEaten)
+  }
+  
+}
+
+
 ```
 
 ## Exercises to practise functions and if-else statements
@@ -206,10 +249,26 @@ while (number < 10){ # While the number is below 10, do the following
 Create a function that accepts a temperature in Fahrenheit and returns the temperature converted to Celsius. The formula to convert Fahrenheit to Celsius is: C = (F-32)*5/9.
 ```{r}
 # Function to convert Fahrenheit to Celsius
-convert_to_celsius <- function(fahrenheit) {
-  # Your code here
-  # Hint: Apply the conversion formula within the function
+convert_to_celsius <- function(fahrenheit) 
+  {
+    celsius <- ((fahrenheit - 32) * 5) / 9
+    
+    return(celsius)
+    
 }
+
+
+# tests that the function works - Expected Output (for fahrenheit = 68): 20
+convert_to_celsius(68)
+
+
+
+
+
+###Pernille comments:
+  # Hint: Apply the conversion formula within the function
+
+
 
 # Example of how the final function (when you've written it) should be used:
 # temp_celsius <- convert_to_celsius(68)
@@ -229,10 +288,37 @@ If the temperature is below 15 degrees, suggest wearing a warm coat.
 Use statements if, else if, and else. Google how to set up the syntax with curly brackets and so on if you're not sure.
 ```{r}
 # Function to give clothing advice based on temperature
-clothing_advice <- function(temperature) {
-  # Your code here
+clothing_advice <- function(temperature)
+{
+    if (temperature > 25)
+    {
+      print("Suggestion: wear a T-shirt")
+    }
+    else if (temperature >= 15 && temperature <= 25)
+    {
+      print("Suggestion: wear a light jacket")
+    }
+    else if (temperature < 15)
+    {
+      print("Suggestion: wear a warm coat")
+    }
+    else
+    {
+      print("Suggestion: wear whatever you want")
+    }
+  
+  }
+
+
+# tests that the function works - Expected Output (for temperature = 23): "Suggestion: wear a light jacket"
+clothing_advice(23)
+
+
+
+
+
+###Pernille comments:
   # Hint: Use if-else statements to check the temperature and return the advice
-}
 
 # Example of how the final function (when you've written it) should be used:
 # advice <- clothing_advice(20)
@@ -243,7 +329,38 @@ clothing_advice <- function(temperature) {
 
 ## Exercises from the book
 
+- 0 and 5.5 are good to have done at least
+
 ## Ex. 0: Write up / copy the code found on page 69-70 in chapter 5 ROS and note whats going on at each step. The book explains it - so just go through it and discuss with your group to understand whats going on.
+
+
+// this code stimulates the birth of girls out of 400 babies given the probability of a girl being born being 48.8%.   The 1 specifies that only 1 random number is being generated from this binomial distribution with 400 trials
+
+```{r}
+n_girls <- rbinom(1, 400, 0.488)
+print(n_girls)
+```
+
+
+// this code stimulates the birth of girls out of 400 babies given the probability of a girl being born being 48.8%.   The 1 specifies that only 1 random number is being generated from this binomial distribution with 400 trials
+
+```{r}
+n_sims <- 1000
+
+n_girls <- rep(NA, n_sims)
+
+for (s in 1:n_sims)
+  {
+n_girls[s] <- rbinom(1, 400, 0.488)
+  }
+
+hist(n_girls)
+```
+
+
+
+
+
 
 ### Ex. 5.1 Discrete probability simulation: Suppose that a basketball player has a 60% chance of making a shot, and he keeps taking shots until he misses two in a row. Also assume his shots are independent (so that each shot has 60% probability of success, no matter what happened before).
 * Hint 3 and 4
