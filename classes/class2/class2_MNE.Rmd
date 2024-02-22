@@ -19,7 +19,8 @@ knitr::opts_knit$set(root.dir = "/Users/mie/OneDrive/Skole/Methods 2 The General
 library(pacman)
 
 pacman::p_load(tidyverse,
-               ggpubr)
+               ggpubr,
+               ggplot2)
 
 ```
 
@@ -342,20 +343,151 @@ print(n_girls)
 ```
 
 
-// this code stimulates the birth of girls out of 400 babies given the probability of a girl being born being 48.8%.   The 1 specifies that only 1 random number is being generated from this binomial distribution with 400 trials
+// this code shows how the value above is binomially distributed by stimulating binomial data 1000 times in total and then plotting it as a histogram, which because of relatively big amount of stimulations looks very much normally distributed
 
 ```{r}
-n_sims <- 1000
+n_sims <- 1000            # the times we want the later process to happen
 
-n_girls <- rep(NA, n_sims)
+n_girls <- rep(NA, n_sims)  # vector for now storing only NA for all 1000 stimulations made in the next line
 
+# for loop where each value (of 1000) holds the binomial distributed variable from before 
 for (s in 1:n_sims)
   {
-n_girls[s] <- rbinom(1, 400, 0.488)
+  n_girls[s] <- rbinom(1, 400, 0.488)
   }
 
+# plots a histogram of the process from before 1000 times
+hist(n_girls)
+
+# - this also shows the uncertainty, as the histogram will look different from each run of this code, but still overall have the bell curve shape
+
+```
+
+// this code shows how to directly make 1000 draws from the binomial distribution
+
+```{r}
+n_girls <- rbinom(n_sims, 400, 0.488)
+
+# more direct way of making the many draws from the binomial distribution, while taking the total number of babies born (400) and the rate of girls (48.8%)
+
+
+
+# plots a histogram again
 hist(n_girls)
 ```
+
+# now accounting for twins
+
+// this code shows how to make 1000 draws from the binomial distribution
+
+```{r}
+# this code takes a samples of the size as before of 400, where it adds that fraternal twins and identical twins can happen; specifying the probabilites for both of those possibilities as well as for the probability of a single birth
+
+birth_type <- sample(c("fraternal twin","identical twin","single birth"),
+                     size=400,
+                     replace=TRUE,
+                     prob=c(1/125, 1/300, 1 - 1/125 - 1/300))
+
+# (the above) makes this sample, where the birthes are based on the probability of each of these kinds of births
+
+
+
+girls <- rep(NA, 400)  # vector for now storing only NA for all 400 stimulations made in the next line
+
+
+# for loop where each value (out of 400) holds the binomial distributed variable from before for either single birth or either kind of twin birth based. Done by i (which goes to 400) going thru the list which is combined of all kinds of births relative to their probability 
+
+for (i in 1:400)
+  {
+  if (birth_type[i]=="single birth") 
+    {
+     girls[i] <- rbinom(1, 1, 0.488)
+    }
+  else if (birth_type[i]=="identical twin")
+     {
+     girls[i] <- 2*rbinom(1, 1, 0.495)
+     }
+  else if (birth_type[i]=="fraternal twin")
+    {
+    girls[i] <- rbinom(1, 2, 0.495)
+    }
+ }
+
+
+girls # vector, initially just filled with up with NA, but after the for loop it's of 0s, 1s and 2s - representing the number of girls born for the 400 births
+
+
+
+n_girls <- sum(girls)
+
+n_girls  # this prints the value (sampled from the binomial distribution) of girls born out of 400 births taken kinds of twins in to account
+
+```
+
+// this code shows how to more directly make 1000 draws from the binomial distribution without looping
+
+
+```{r}
+girls <- ifelse(birth_type=="single birth", rbinom(400, 1, 0.488),
+                ifelse(birth_type=="identical twin", 2*rbinom(400, 1, 0.495),
+                       rbinom(400, 2, 0.495)))
+
+
+girls
+
+
+```
+
+
+// this code shows how to approximate the distributions of the number of girl births out of 400 - by repeating a loop of this done 1000 times
+
+```{r}
+n_sims <- 1000        # times the distribution of the data is repeated
+
+n_girls <- rep(NA, n_sims)       # the initial NA numbers later becoming the girl births per birth
+
+
+# the following does what is previously done, but all in one for loop
+    # first for loop runs 1000 times, within which another for loop is run 400 times which is the number of births for each simulation
+for (s in 1:n_sims)
+  {
+  birth_type <- sample(c("fraternal twin","identical twin","single birth"),
+                       size=400, replace=TRUE, prob=c(1/125, 1/300, 1 - 1/125 - 1/300))
+  
+  girls <- rep(NA, 400)
+  
+  for (i in 1:400)
+    {
+    if (birth_type[i]=="single birth")
+      {
+      girls[i] <- rbinom(1, 1, 0.488)
+      }
+    else if (birth_type[i]=="identical twin")
+      {
+      girls[i] <- 2*rbinom(1, 1, 0.495)
+      }
+    else if (birth_type[i]=="fraternal twin")
+      {
+      girls[i] <- rbinom(1, 2, 0.495)
+      }
+    }
+
+    n_girls[s] <- sum(girls) # this then is the amount of girls per 400 births per simulation of this data (aka 1000 data points)
+    
+    }
+
+
+
+
+
+# here i print the values of n_girls first AND then plots it as a histogram which shows the expected bell curve as well as it being more constant each time the code is run cause of the relatively large amount of simulations (1000)
+
+n_girls
+
+hist(n_girls)
+
+```
+
 
 
 
@@ -381,12 +513,83 @@ We need to record:
 
 Let's try and write a function:
 ```{r}
+
 # Function to simulate basketball player
-basketball <- function(){ # starting the function for you
+basketball <- function()
+  {
+   hits_InRow_count = list() #empties list used for counting hits in a row till 2 misses
+   miss_InRow_count = list() #empties list used for counting misses in a row till 2 misses
+   hits_InRow = 0
+   miss_InRow = 0
+   throwCount = 0
+   keepGoing = TRUE
   
-  # your code here
   
+  
+   while (keepGoing == TRUE)
+     {
+     
+     throwCount = throwCount + 1
+     
+     hit <- rbinom(1, 1, 0.60) # while keepGoing it true a new hit/throw keeps being made. This makes one variable each time which can either be 1 or 0 - aka true or false, where true is for a hit, which has a 60% possibility
+     
+     
+     
+     
+     
+     # logs for hits and for misses
+     if(hit == TRUE)
+       {
+        miss_InRow_count <- append(miss_InRow_count, miss_InRow) # logs the count of misses in a row
+        
+        miss_InRow = 0
+        hits_InRow = hits_InRow + 1
+       }
+     else if(hit == FALSE)
+       {
+        hits_InRow_count <- append(hits_InRow_count, hits_InRow) # logs the count of hits in a row
+        
+        hits_InRow = 0
+        miss_InRow = miss_InRow + 1
+        }     
+
+     # ends the while loop if 2 misses in a row
+     if(miss_InRow == 2)
+       {
+        miss_InRow_count <- append(miss_InRow_count, miss_InRow) # logs the count of misses in a row
+       
+        keepGoing = FALSE # stops for more throws as 2 misses has occured in a row
+       }     
+     
+     }
+  
+   
+   
+   
+  # simply to make the output look more like a list from python, which is printed in a straight line
+  hits_InRow_count <- paste(hits_InRow_count, collapse = ", ")
+  
+  # return a list of the different number of hits in a row the player has had
+  return(hits_InRow_count)
+   
+   
+   
+  # return a list of the different number of misses in a row the player has had
+    #- e.g. to check that the function stops running when there has been 2 misses in a row
+  #return(miss_InRow_count)
+
 }
+
+
+basketball()
+
+
+
+
+
+###Pernille comments:
+
+
 # Example usage of the function, when done
 # basket_sim <- basketball(printing = TRUE)
 
@@ -394,23 +597,195 @@ basketball <- function(){ # starting the function for you
 
 #### Ex. 5.1.b) Put the R function in a loop to simulate the process 1000 times. Use the simulation to estimate the mean and standard deviation of the total number of shots that the player will take, and plot a histogram representing the distribution of this random variable. 
 ```{r}
-# your code here
+
+# Function to simulate basketball player
+   # altered so it now returns a string (updated per use) with the number of hits for each run of the function till 2 misses come in a row
+
+basketball_slightlyAltered <- function(throwCountAcross)
+  {
+   hits_InRow_count = list() #empties list used for counting hits in a row till 2 misses
+   miss_InRow_count = list() #empties list used for counting misses in a row till 2 misses
+   hits_InRow = 0
+   miss_InRow = 0
+   throwCount = 0
+   keepGoing = TRUE
+  
+  
+  
+   while (keepGoing == TRUE)
+     {
+     
+     throwCount = throwCount + 1
+     
+     hit <- rbinom(1, 1, 0.60) # while keepGoing it true a new hit/throw keeps being made. This makes one variable each time which can either be 1 or 0 - aka true or false, where true is for a hit, which has a 60% possibility
+     
+     
+     
+     
+     
+     # logs for hits and for misses
+     if(hit == TRUE)
+       {
+        miss_InRow_count <- append(miss_InRow_count, miss_InRow) # logs the count of misses in a row
+        
+        miss_InRow = 0
+        hits_InRow = hits_InRow + 1
+       }
+     else if(hit == FALSE)
+       {
+        hits_InRow_count <- append(hits_InRow_count, hits_InRow) # logs the count of hits in a row
+        
+        hits_InRow = 0
+        miss_InRow = miss_InRow + 1
+        }     
+
+     # ends the while loop if 2 misses in a row
+     if(miss_InRow == 2)
+       {
+        miss_InRow_count <- append(miss_InRow_count, miss_InRow) # logs the count of misses in a row
+       
+        keepGoing = FALSE # stops for more throws as 2 misses has occured in a row
+       }     
+     
+     }
+  
+   
+   
+   
+  # simply to make the output look more like a list from python, which is printed in a straight line
+  hits_InRow_count <- paste(hits_InRow_count, collapse = ", ")
+  
+  #print(hits_InRow_count) #prints a list of the different number of hits in a row the player has had
+  
+
+  
+  throwCountAcross <- append(throwCountAcross, throwCount)
+  
+  # return the number of hits before 2 misses come in a row
+  return(throwCountAcross)
+   
+
+}
+
+# empties the lists before the function
+throwCountAcross <- list()
+
+
+# this for loop runs the function 1000 times, adding the total amount of throws for each simulation till 2 misses came in a row to a list
+for (i in 1:1000)
+{
+  throwCountAcross <- basketball_slightlyAltered(throwCountAcross)
+}
+
+class(throwCountAcross)
+
+#prints a list of the amount of throws per simulations
+print(paste(unlist(throwCountAcross), collapse = ", ")) # unlist() converts the list to a vector, which is then made a string by paste(), but that only holds for this line - after which it still a list, the class isn't changed
+
+
+throwCountAcross <- unlist(throwCountAcross) # makes the list a numeric vector
+
+
+# -----------
+
+## how to estimate the mean and sd of the total number of shots a player will take
+
+meanThrows_basketball <- mean(throwCountAcross)
+
+sdThrows_basketball <- sd(throwCountAcross)
+
+
+
+## histogram representing the distribution of this random variable of shots per simulation
+
+hist(throwCountAcross)
+
+
 ```
+
+
+
+
+
 
 #### Ex. 5.1.c) Using your simulations, make a scatterplot of the number of shots the player will take and the proportion of shots that are successes.
 ```{r}
-# your code here
+
+**wait on solution**
+
+
+
+
+
 ```
 
 ### Ex. 5.3: Binomial distribution: A player takes 10 basketball shots, with a 40% probability of making each shot. Assume the outcomes of the shots are independent.
 #### Ex. 5.3.a) Write a line of R code to compute the probability that the player makes exactly 3 of the 10 shots.
 ```{r}
-# your code here
+
+# the function takes the following parameters: observation, size/number of trials && the probabilit of success (of the observation of parameter 1) for each trial
+
+dbinom(3, 10, 0.4) # 3 = number of successes;  10 = number of trials;   0.4 = probabilty of success on each trial (as they are independent of each other)
+
+
+
+
+
 ```
 
 #### Ex. 5.3.b) Write an R function to simulate the 10 shots. Loop this function 10 000 times and check that your simulated probability of making exactly 3 shots is close to the exact probability computed in (a).
 ```{r}
-# your code here
+
+## exact probability computed in (a)
+dbinom(3, 10, 0.4)
+
+# -- - - - - 
+
+
+# empties the lists before the function
+shots_success <- list()
+
+
+# Function to simulating 10 shots
+shots10 <- function()
+  {
+   
+   shot <- rbinom(3, 10, 0.4)
+   shots_success <- append(shots_success, shot) # logs the success of a shot
+  
+   return(shots_success)
+  
+  }
+  
+
+# looping the function 10 000 times
+
+for (i in 1:10000)
+{
+  shotsSimulation <- append(shotsSimulation, shots10())
+}
+
+
+
+
+# calculates tje simulated probability of making exactly 3 shots
+
+count <- sum(shotsSimulation == 1)
+
+
+# calculates the probability
+probSimulation <- count / length(shotsSimulation)
+
+# print the result
+probSimulation
+
+
+
+
+
+
+
+
 ```
 
 ## Ex. 5.4: Demonstration of the Central Limit Theorem: Let x = x1 + · · · + x20, the sum of 20 independent uniform(0, 1) random variables. In R, create 1000 simulations of x and plot their histogram. What is the normal approximation to this distribution provided by the Central Limit Theorem? Overlay a graph of the normal density on top of the histogram. Comment on any differences between the histogram and the curve.
