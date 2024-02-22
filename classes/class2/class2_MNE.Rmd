@@ -11,7 +11,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 
 # Setting my root directory to where I have my /data folder etc. (easier for me, but personalise to your own way of working)
-knitr::opts_knit$set(root.dir = "/Users/pernillebrams/Desktop/AARHUS_UNIVERSITY/instructor_2024/methods-2")
+knitr::opts_knit$set(root.dir = "/Users/mie/OneDrive/Skole/Methods 2 The General Linear Model/Methods2_resources/classes")
 
 ```
 
@@ -23,6 +23,124 @@ pacman::p_load(tidyverse,
 
 ```
 
+
+```{r live coding from class - done together}
+
+pacman::p_load(tidyverse,
+               ggplot2)
+
+
+## learning functions - try making a function
+
+minFunc <- function(parameter1, parameter2)
+  {
+  value <- parameter1 * 2 - parameter2
+  
+  return(value)
+  
+  }
+
+
+minFunc(1,0)
+
+
+# ----------------------------------------------- # shift + ctrl + a = beautifies the code by spaces (!!!)
+
+
+## learning functions - try making a function with normal distribution and plotting, f1
+
+# initial parameters
+ #mu <- 0
+ #sigma <- 1
+ #tau <- 1
+ 
+
+# the functions
+
+f1 <- function(xValues, mu, sigma)
+{
+  f1 <- (1 / (sigma * sqrt(2 * pi))) * exp(1) ^ (-0.5 * ((x - mean) / sigma)^2) # you have this in the code from yesterday - check that
+  
+  f1 <- (1 / (sigma * sqrt(2 * pi))) * exp(-0.5 * ((x - mean) / sigma)^2)
+  
+  return(f1)
+  
+}
+
+f2 <- function(xValues, mu, tau)
+{
+  f2 <- sqrt(tau/(2*pi))*exp((-tau*(x-mean)^2)/2)
+  
+  return(f2)
+  
+}
+
+
+
+# generate x values
+
+xValues <- seq(-5, 5, 0.1) #0.1 is increments*
+
+
+
+
+# calculate y-values from the functions f_1 and f_2
+
+y_f1 <- f1(xValues)
+
+y_f2 <- f2(xValues)
+
+
+
+# make dataframe for plotting
+
+dataframe <- data.frame(x = xValues,
+                        f1 = y_f1,
+                        f2 = y_f2)
+
+
+# plotting
+
+plot1 <- ggplot(dataframe,
+                aes(x))+
+  geom_line(aes(y = f1, colour = "f1"))+
+  geom_line(aes(y = f2, colour = "f2"))+
+  labs(title = "hello")+
+  theme_minimal()
+
+plot1
+
+
+
+## why are the plotted functions the same when 2 different functions have been used IF sigma & tau = 1
+
+    # sqrt(1/t) = sd -> the relationship between them
+
+      # sqrt(1/1) = sd -> 1 = sd -> which matches with our hardcoding of sd as 1
+
+
+## new parameters
+
+y_f1_new <- f1(xValues, mu = 0, sigma = 3)
+
+y_f2_ew <- f2(xValues, mu = 0, tau = 3)
+
+
+
+## why are the plotted functions then different when 2 different functions have been used IF sigma (sd) & tau = 3 (precision)
+
+      # f2 with tau (precision) - the higher value of tau, the more precise, the smaller the width
+
+      # f1 with sigma (sd) - the lower the value of sigma, the more precise, the smaller the width
+
+
+```
+
+
+
+
+
+
 # Learning about for loops, if-else statements, functions - and practicing simulating!
 (Lots of stuff in chapter 4-5 about this)
 
@@ -31,12 +149,37 @@ Loops can be good for simulating. And they are cool. Let's practice is a bit.
 ## Exercises to practise loops (discuss with partner/group if you want to)
 ### Ex. A: What is the difference between a for- and a while loop? Explain in your own words in 1-2 sentences.
 
+  a for loop runs a chunk of code for every i in something.   e.g. for every i out of 10 by i++
+  
+  a while loop runs a chunk while something remains true      e.g. if x == T, then the code chunk runs
+
+
 ### Ex. B: When would you use for-loops and when would you use while-loops? Explain in your own words in 1-2 sentences
+
+  when some code has to be run a specific number of times.            e.g. often if x = x + 1
+  
+  when some code has to keep running until something becomes false    e.g. ***
+
+
 
 ### Ex. C: Create and run both a simple for and a while loop
 I've made an example below. Make your own example below it. If you have no ideas for what to code in your for loop, here's an example you can try to code up:
 - A simple for loop could be for each i in 1:20, print i if i is above 3
 ```{r}
+t = 2
+mean = 7
+x = 8.4
+
+part1_2 <- sqrt(t/(2*pi))
+
+part2_2 <- (-t*(x-mean)^2)/2
+
+f2 <- part1_2*exp(1)^(part2_2)
+
+f2
+
+
+
 # Here's a simple for-loop
 for (i in 1:10){ # For each i in 1:10...
   print(i+5)    # Do this..
