@@ -792,37 +792,303 @@ probSimulation
 
 (Recall the Central limit theorem (CLT) on the bottom of page 51 and from Methods 1)
 ```{r}
-# your code here
+
+#makes an empty list
+combinedX <- list()
+
+# for loop making the 20 x-values, adding each to a list
+for (i in 1:20)
+{
+  singleX <- runif(1, 0, 1) # uniform distribution, number of random numbers to be generated (1), going from min (0) to max (1)
+  combinedX <- append(combinedX, singleX) # logs the new singleX
+  
+}
+
+# sums together the values of the list, aka the 20 xValues
+sum_of_combinedX <- sum(unlist(combinedX))
+
+# prints it
+sum_of_combinedX
+
+
+
+
+
+
+# - - - - - - -  -
+
+## create 1000 simulations of x and plot their histograms
+
+
+#makes an empty list
+combinedX_simulation <- list()
+xValues_simulation <- list()
+
+
+# looping the previous for loop 1000 times
+
+for (j in 1:1000)
+{
+  combinedX_simulation <- c()
+  
+  
+ for (i in 1:20)
+ {
+  singleX <- runif(1, 0, 1) # uniform distribution, number of random numbers to be generated (1), going from min (0) to max (1)
+  combinedX_simulation <- c(combinedX_simulation, singleX) # logs the new singleX
+ }
+  
+ # sums together the values of the list, aka the 20 xValues
+ sum_of_combinedX_simulation <- sum(combinedX_simulation)
+ 
+ xValues_simulation <- append(xValues_simulation, sum_of_combinedX_simulation)
+ xValues_simulation
+ 
+}
+
+# as a list of lists have been made i unlist it, to have it be a numeric list
+xValues_simulation <- unlist(xValues_simulation)
+
+xValues_simulation
+
+
+
+
+# making a plot
+ggplot(data.frame(x = xValues_simulation), aes(x)) + 
+  geom_histogram(aes(y = ..density..), bins = 30, fill = "skyblue", color = "black") +
+  stat_function(fun = dnorm, args = list(mean = mean(xValues_simulation), sd = sd(xValues_simulation)), color = "red") +
+  labs(title = "Histogram of Simulated Data", x = "Value", y = "Density")
+
+
+
+
+
+
 ```
 
 ## Ex. 5.5: Distribution of averages and differences: The heights of men in the United States are approximately normally distributed with mean 69.1 inches and standard deviation 2.9 inches. The heights of women are approximately normally distributed with mean 63.7 inches and standard deviation 2.7 inches. Let x be the average height of 100 randomly sampled men, and y be the average height of 100 randomly sampled women. In R, create 1000 simulations of x − y and plot their histogram. Using the simulations, compute the mean and standard deviation of the distribution of x − y and compare to their exact values.
 *Hint 1
 
 ```{r}
-# your code here
+
+**wait on solution**
+
+
+
+```
+
+```{r myVersion complied with some chatGPT help}
+# Define the parameters for the normal distributions
+mean_men <- 69.1
+sd_men <- 2.9
+mean_women <- 63.7
+sd_women <- 2.7
+
+# Number of simulations
+n_simulations <- 1000
+
+# Number of samples in each simulation
+n_samples <- 100
+
+# Initialize an empty vector to store the differences
+differences <- numeric(n_simulations)
+
+# Perform the simulations
+for (i in 1:n_simulations) {
+  # Generate samples of men's and women's heights
+  men_heights <- rnorm(n_samples, mean = mean_men, sd = sd_men)
+  women_heights <- rnorm(n_samples, mean = mean_women, sd = sd_women)
+  
+  # Calculate the average height for each sample
+  avg_height_men <- mean(men_heights)
+  avg_height_women <- mean(women_heights)
+  
+  # Calculate the difference between the average heights
+  differences[i] <- avg_height_men - avg_height_women
+}
+
+# Plot the histogram of the differences
+hist(differences, breaks = 30, main = "Distribution of Differences in Average Heights", xlab = "Difference in Average Heights (inches)", ylab = "Frequency")
+
+# Compute the mean and standard deviation of the differences
+mean_difference <- mean(differences)
+sd_difference <- sd(differences)
+
+# Print the results
+cat("Mean difference:", mean_difference, "\n")
+cat("Standard deviation of difference:", sd_difference, "\n")
+
 ```
 
 ## Ex. 5.8: Coverage of confidence intervals: On page 15 there is a discussion of an experimental study of an education-related intervention in Jamaica, in which the point estimate of the treatment effect, on the log scale, was 0.35 with a standard error of 0.17. Suppose the true effect is 0.10 — this seems more realistic than the point estimate of 0.35 — so that the treatment on average would increase earnings by 0.10 on the log scale. Use simulation to study the statistical properties of this experiment, assuming the standard error is 0.17.
 *Hint 2
 
 ```{r}
-# your code here
+
+expectedTrueEffect <- 0.1
+expectedIncrease <- 0.1
+assumedSE <- 0.17
+
+
+log_normal_values <- rlnorm(n = 1000, meanlog = 0.1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ```
 
 #### Ex. 5.8.a) Simulate 1000 independent replications of the experiment assuming that the point estimate is normally distributed with mean 0.10 and standard deviation 0.17.
 (In the experiment on page 15, we see n = 127 children)
 ```{r}
-# your code here
+
+
+simulationData <- list()
+
+
+for (i in 1000)
+{
+  normal_values <- rnorm(127, 0.1, 0.17)
+  
+  
+  simulationData <- c(simulationData, normal_values)
+  
+  simulationData <- append(simulationData, simulationData)
+  
+  
+}
+
+
+simulationData <- unlist(simulationData)
+
+
+## calculates the confidence intervals via a t-test
+
+results <- t.test(simulationData)
+
+confidenceIntervals <- results$conf.int
+
+
+confidenceIntervals
+
+
+
+
 ```
 
 #### Ex. 5.8.b) For each replication, compute the 95% confidence interval. Check how many of these intervals include the true parameter value.
 ```{r}
-# your code here
+
+withinCI_count <- 0
+TrueParameter_withinCI_count <- 0
+expectedTrueEffect <- 0.1
+
+
+for (i in 1:1000)
+{
+  normal_values <- rnorm(127, 0.1, 0.17)
+  
+  
+  
+  ## calculates the confidence intervals via a t-test
+
+  results <- t.test(normal_values)
+
+  confidenceIntervals <- results$conf.int
+  
+  # get the start and end of the CI
+  start_CI <- confidenceIntervals[1]
+  
+  end_CI <- confidenceIntervals[2]
+  
+  
+  # checks for each simulation if the value in within the confidence intervals # not needed - was just how i understood the task at first
+  
+  for (z in 1:127)
+  {
+      if(normal_values[z] >= start_CI && normal_values[z] <= end_CI)
+    {
+     withinCI_count <- withinCI_count + 1
+    
+    }
+    
+  }
+  
+  
+
+  # checks for each simulation if the true parameter value is within the confidence intervals # this was the assignment
+  for (z in 1:127)
+  {
+      if(expectedTrueEffect >= start_CI && expectedTrueEffect <= end_CI)
+    {
+     TrueParameter_withinCI_count <- TrueParameter_withinCI_count + 1
+    
+    }
+    
+  }
+  
+}
+
+
+
+
+TrueParameter_withinCI_count # this stores the amount of times the true parameter value is within the CI for the simulations
+
+
+
 ```
 
 #### Ex. 5.9: Coverage of confidence intervals after selection on statistical significance: Take your 1000 simulations from Exercise 5.8, and select just the ones where the estimate is statistically significantly different from zero. Compute the average and standard deviation of the selected point estimates. Compare these to the result from Exercise 5.8.
 ```{r}
-# your code here
+
+
+count_significantlyDiff <- 0
+expectedTrueEffect <- 0.1
+
+
+for (i in 1:1000)
+{
+  normal_values <- rnorm(127, 0.1, 0.17)
+  
+
+  
+  
+  ## calculates the p-values for each simulation -- checks for each simulation if the value is significantly different from 0
+
+  results <- t.test(normal_values, mu = 0) # tests if normal_values is significantly different from 0 by a one-sample t-test
+
+
+  if(results$p.value < 0.05)
+  {
+   count_significantlyDiff <- count_significantlyDiff + 1
+    
+  }
+  
+  
+}
+
+count_significantlyDiff
+
+
+
+### PART 2: Compute the average and standard deviation of the selected point estimates. Compare these to the result from Exercise 5.8.
+
+
+**wait on solution**
+
+
+
 ```
 
 # Hints
@@ -847,11 +1113,66 @@ A prime number is a natural number greater than 1 that has no positive divisors 
 #### Ex. 1: Write a function in R that checks whether a given number is a prime number
 ```{r}
 # Function to check if a number is prime
-is_prime <- function(number) {
-  # Your code here
+
+is_prime <- function(number)
+{
+  prime = TRUE
+  run = TRUE
+  
+  # runs untill it has been determined whether a number is a prime or not
+  while(run == TRUE)
+  {
+      # checks whether the input parameter is positive AND a whole number
+   if(number > 0 && trunc(number) == number)
+   {
+    
+    for(i in 2:sqrt(number))
+    {
+         # for finding non-primes by checking if the input parameter is positive, divisible by a smaller number without a remainder, and divided by itself
+      if((number / i) > 0 && (number/i)-trunc(number/i) == 0 && (number / i) != 1)
+      {
+         prime = FALSE
+         run = FALSE
+        
+      }
+    }
+     
+    # if not a non-prime, then a prime
+     if(prime == TRUE)
+     {
+       run = FALSE
+     }
+    
+    
+   }
+   else
+   {
+    # if it didn't live up to the initial conditions of a prime, then it isn't one
+     
+    prime = FALSE
+    
+    run = FALSE
+      
+   }
+    
+  }
+  
+  return(prime)
+  
+}
+
+
+
+
+is_prime(90)
+
+
+
+
+
+###Pernille comments:
   # Hint: You may use a while-loop or a for-loop to test divisibility
   # Remember to handle edge cases like numbers less than 2
-}
 
 # Example usage:
 # result <- is_prime(29)
