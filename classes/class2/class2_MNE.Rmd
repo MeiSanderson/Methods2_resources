@@ -58,19 +58,17 @@ minFunc(1,0)
 
 # the functions
 
-f1 <- function(xValues, mu, sigma)
+f1 <- function(x, mu, sigma)
 {
-  f1 <- (1 / (sigma * sqrt(2 * pi))) * exp(1) ^ (-0.5 * ((x - mean) / sigma)^2) # you have this in the code from yesterday - check that
-  
-  f1 <- (1 / (sigma * sqrt(2 * pi))) * exp(-0.5 * ((x - mean) / sigma)^2)
+  f1 <- (1 / (sigma * sqrt(2 * pi))) * exp(-0.5 * ((x - mu) / sigma)^2)
   
   return(f1)
   
 }
 
-f2 <- function(xValues, mu, tau)
+f2 <- function(x, mu, tau)
 {
-  f2 <- sqrt(tau/(2*pi))*exp((-tau*(x-mean)^2)/2)
+  f2 <- (sqrt(tau/(2*pi)))*exp((-tau*(x-mu)^2)/2)
   
   return(f2)
   
@@ -80,16 +78,22 @@ f2 <- function(xValues, mu, tau)
 
 # generate x values
 
-xValues <- seq(-5, 5, 0.1) #0.1 is increments*
+xValues <- seq(-5, 5, by = 0.1) #0.1 is increments*
 
 
 
+# calculate y-values from the functions f_1 and f_2 # initial, 1.0
 
-# calculate y-values from the functions f_1 and f_2
+y_f1 <- f1(x = xValues, mu = 0.0, sigma = 1.0)
 
-y_f1 <- f1(xValues)
+y_f2 <- f2(x = xValues, tau = 1.0, mu = 0)
 
-y_f2 <- f2(xValues)
+
+# calculate y-values from the functions f_1 and f_2 # 2.0
+
+y_f1 <- f1(x = xValues, mu = 0.0, sigma = 3.0)
+
+y_f2 <- f2(x = xValues, tau = 3.0, mu = 0)
 
 
 
@@ -106,10 +110,19 @@ plot1 <- ggplot(dataframe,
                 aes(x))+
   geom_line(aes(y = f1, colour = "f1"))+
   geom_line(aes(y = f2, colour = "f2"))+
-  labs(title = "hello")+
+  labs(title = "Probability density functions with mu = 0, sigma = 1, tau = 1",
+       subtitle = "Learning about f1 and f2",
+       caption = "Methods 2 #fun",
+       colour = "Function")+
   theme_minimal()
 
 plot1
+
+
+
+# checking that f1 and f2 are he same - when both sigma, tau = 1
+library(tidyverse)
+df <- df %>% mutate(checking_stuff = ifelse(f1 == f2, TRUE, FALSE))
 
 
 
@@ -120,7 +133,10 @@ plot1
       # sqrt(1/1) = sd -> 1 = sd -> which matches with our hardcoding of sd as 1
 
 
-## new parameters
+
+
+
+## new parameters # already added above
 
 y_f1_new <- f1(xValues, mu = 0, sigma = 3)
 
@@ -136,24 +152,10 @@ y_f2_ew <- f2(xValues, mu = 0, tau = 3)
 
 
 
+# their conclusion:
 
-
-
-
-
-### confusion Hi
-
-t = 2
-mean = 7
-x = 8.4
-
-part1_2 <- sqrt(t/(2*pi))
-
-part2_2 <- (-t*(x-mean)^2)/2
-
-f2 <- part1_2*exp(1)^(part2_2)
-
-f2
+## Higher tau --> higher precision --> narrower curve. Lower tau opposite.
+## Higher sigma --> higher standard deviation --> wider curve. Lower sigma opposite.
 
 
 
@@ -667,6 +669,8 @@ basketball_slightlyAltered <- function(throwCountAcross)
 
 }
 
+# _________________________
+
 # empties the lists before the function
 throwCountAcross <- list()
 
@@ -676,6 +680,9 @@ for (i in 1:1000)
 {
   throwCountAcross <- basketball_slightlyAltered(throwCountAcross)
 }
+
+
+
 
 class(throwCountAcross)
 
@@ -695,6 +702,10 @@ meanThrows_basketball <- mean(throwCountAcross)
 sdThrows_basketball <- sd(throwCountAcross)
 
 
+# print the mean and standard deviation
+print(paste("The mean of the total number of shots is", meanThrows_basketball, "and the std of total number of shots is", sdThrows_basketball))
+
+
 
 ## histogram representing the distribution of this random variable of shots per simulation
 
@@ -711,7 +722,8 @@ hist(throwCountAcross)
 #### Ex. 5.1.c) Using your simulations, make a scatterplot of the number of shots the player will take and the proportion of shots that are successes.
 ```{r}
 
-**wait on solution**
+
+## look to the solution
 
 
 
@@ -757,6 +769,7 @@ shots10 <- function()
   
   }
   
+shotsSimulation <- c()
 
 # looping the function 10 000 times
 
@@ -872,11 +885,52 @@ ggplot(data.frame(x = xValues_simulation), aes(x)) +
 
 ```{r}
 
-**wait on solution**
+### from pernille's solution
+
+# Distribution of averages and differences
+# x = randomly sampled height of men, y = randomly sampled height of women
+x <- c()
+y <- c()
+xy_diff <- c()
+n_sims <- 1000
+
+# Looping through the 1000 simulations
+for (i in 1:n_sims){
+  
+  # Setting the i'th index of my x vector to be the mean of a rnorm() dist with the means/sds given
+  x[i] <- mean(rnorm(100 , mean = 69.1, sd = 2.9))
+  
+  # Setting the i'th index of my y vector to be the mean of a rnorm() dist with the means/sds given
+  y[i] <- mean(rnorm(100, mean = 63.7, sd = 2.7))
+  
+  # Get the difference as per the question (x-y) for the ith observation
+  xy_diff[i] <- x[i] - y[i] 
+}
+
+# Look at results
+mean(xy_diff)
+sd(xy_diff)
+
+# Histogram
+hist(xy_diff)
 
 
 
 ```
+
+```{r}
+
+### from pernille's solution - giving about the same result as for my own code below
+
+
+# Mean  
+69.1 - 63.7
+# Standard error of the mean.
+sqrt((2.9/sqrt(100))^2 +  (2.7/sqrt(100))^2 - 2 * cov(x,y))
+```
+
+
+
 
 ```{r myVersion complied with some chatGPT help}
 # Define the parameters for the normal distributions
@@ -1085,7 +1139,7 @@ count_significantlyDiff
 ### PART 2: Compute the average and standard deviation of the selected point estimates. Compare these to the result from Exercise 5.8.
 
 
-**wait on solution**
+#   **difference between this and solution is that the solution tries to previous tasks
 
 
 
