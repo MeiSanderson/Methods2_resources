@@ -33,8 +33,7 @@ pacman::p_load(tidyverse,
 
 ## learning functions - try making a function
 
-minFunc <- function(parameter1, parameter2)
-  {
+minFunc <- function(parameter1, parameter2){
   value <- parameter1 * 2 - parameter2
   
   return(value)
@@ -58,16 +57,15 @@ minFunc(1,0)
 
 # the functions
 
-f1 <- function(x, mu, sigma)
-{
+f1 <- function(x, mu, sigma){
+  
   f1 <- (1 / (sigma * sqrt(2 * pi))) * exp(-0.5 * ((x - mu) / sigma)^2)
   
   return(f1)
   
 }
 
-f2 <- function(x, mu, tau)
-{
+f2 <- function(x, mu, tau){
   f2 <- (sqrt(tau/(2*pi)))*exp((-tau*(x-mu)^2)/2)
   
   return(f2)
@@ -201,8 +199,7 @@ for (i in 1:10){ # For each i in 1:10...
 
 # your simple loop here
 
-for (i in 1:20)
-{
+for (i in 1:20){
   if(i > 3)
   {
     print(i)
@@ -231,8 +228,7 @@ while (number < 10){ # While the number is below 10, do the following
 hungry = TRUE
 iceCreamEaten = 0
 
-while(hungry == TRUE)
-{
+while(hungry == TRUE){
   iceCreamEaten = iceCreamEaten + 1
   
   if (iceCreamEaten >= 3)
@@ -252,8 +248,7 @@ while(hungry == TRUE)
 Create a function that accepts a temperature in Fahrenheit and returns the temperature converted to Celsius. The formula to convert Fahrenheit to Celsius is: C = (F-32)*5/9.
 ```{r}
 # Function to convert Fahrenheit to Celsius
-convert_to_celsius <- function(fahrenheit) 
-  {
+convert_to_celsius <- function(fahrenheit){
     celsius <- ((fahrenheit - 32) * 5) / 9
     
     return(celsius)
@@ -291,8 +286,7 @@ If the temperature is below 15 degrees, suggest wearing a warm coat.
 Use statements if, else if, and else. Google how to set up the syntax with curly brackets and so on if you're not sure.
 ```{r}
 # Function to give clothing advice based on temperature
-clothing_advice <- function(temperature)
-{
+clothing_advice <- function(temperature){
     if (temperature > 25)
     {
       print("Suggestion: wear a T-shirt")
@@ -353,8 +347,7 @@ n_sims <- 1000            # the times we want the later process to happen
 n_girls <- rep(NA, n_sims)  # vector for now storing only NA for all 1000 stimulations made in the next line
 
 # for loop where each value (of 1000) holds the binomial distributed variable from before 
-for (s in 1:n_sims)
-  {
+for (s in 1:n_sims){
   n_girls[s] <- rbinom(1, 400, 0.488)
   }
 
@@ -399,18 +392,15 @@ girls <- rep(NA, 400)  # vector for now storing only NA for all 400 stimulations
 
 # for loop where each value (out of 400) holds the binomial distributed variable from before for either single birth or either kind of twin birth based. Done by i (which goes to 400) going thru the list which is combined of all kinds of births relative to their probability 
 
-for (i in 1:400)
-  {
-  if (birth_type[i]=="single birth") 
-    {
+for (i in 1:400){
+  
+  if (birth_type[i]=="single birth"){
      girls[i] <- rbinom(1, 1, 0.488)
     }
-  else if (birth_type[i]=="identical twin")
-     {
+  else if (birth_type[i]=="identical twin"){
      girls[i] <- 2*rbinom(1, 1, 0.495)
      }
-  else if (birth_type[i]=="fraternal twin")
-    {
+  else if (birth_type[i]=="fraternal twin"){
     girls[i] <- rbinom(1, 2, 0.495)
     }
  }
@@ -451,25 +441,21 @@ n_girls <- rep(NA, n_sims)       # the initial NA numbers later becoming the gir
 
 # the following does what is previously done, but all in one for loop
     # first for loop runs 1000 times, within which another for loop is run 400 times which is the number of births for each simulation
-for (s in 1:n_sims)
-  {
+for (s in 1:n_sims){
   birth_type <- sample(c("fraternal twin","identical twin","single birth"),
                        size=400, replace=TRUE, prob=c(1/125, 1/300, 1 - 1/125 - 1/300))
   
   girls <- rep(NA, 400)
   
-  for (i in 1:400)
-    {
-    if (birth_type[i]=="single birth")
-      {
+  for (i in 1:400){
+    
+    if (birth_type[i]=="single birth"){
       girls[i] <- rbinom(1, 1, 0.488)
       }
-    else if (birth_type[i]=="identical twin")
-      {
+    else if (birth_type[i]=="identical twin"){
       girls[i] <- 2*rbinom(1, 1, 0.495)
       }
-    else if (birth_type[i]=="fraternal twin")
-      {
+    else if (birth_type[i]=="fraternal twin"){
       girls[i] <- rbinom(1, 2, 0.495)
       }
     }
@@ -517,8 +503,7 @@ Let's try and write a function:
 ```{r}
 
 # Function to simulate basketball player
-basketball <- function()
-  {
+basketball <- function(){
    hits_InRow_count = list() #empties list used for counting hits in a row till 2 misses
    miss_InRow_count = list() #empties list used for counting misses in a row till 2 misses
    hits_InRow = 0
@@ -528,8 +513,7 @@ basketball <- function()
   
   
   
-   while (keepGoing == TRUE)
-     {
+   while (keepGoing == TRUE){
      
      throwCount = throwCount + 1
      
@@ -540,15 +524,13 @@ basketball <- function()
      
      
      # logs for hits and for misses
-     if(hit == TRUE)
-       {
+     if(hit == TRUE){
         miss_InRow_count <- append(miss_InRow_count, miss_InRow) # logs the count of misses in a row
         
         miss_InRow = 0
         hits_InRow = hits_InRow + 1
        }
-     else if(hit == FALSE)
-       {
+     else if(hit == FALSE){
         hits_InRow_count <- append(hits_InRow_count, hits_InRow) # logs the count of hits in a row
         
         hits_InRow = 0
@@ -556,8 +538,7 @@ basketball <- function()
         }     
 
      # ends the while loop if 2 misses in a row
-     if(miss_InRow == 2)
-       {
+     if(miss_InRow == 2){
         miss_InRow_count <- append(miss_InRow_count, miss_InRow) # logs the count of misses in a row
        
         keepGoing = FALSE # stops for more throws as 2 misses has occured in a row
@@ -603,8 +584,7 @@ basketball()
 # Function to simulate basketball player
    # altered so it now returns a string (updated per use) with the number of hits for each run of the function till 2 misses come in a row
 
-basketball_slightlyAltered <- function(throwCountAcross)
-  {
+basketball_slightlyAltered <- function(throwCountAcross){
    hits_InRow_count = list() #empties list used for counting hits in a row till 2 misses
    miss_InRow_count = list() #empties list used for counting misses in a row till 2 misses
    hits_InRow = 0
@@ -614,8 +594,7 @@ basketball_slightlyAltered <- function(throwCountAcross)
   
   
   
-   while (keepGoing == TRUE)
-     {
+   while (keepGoing == TRUE){
      
      throwCount = throwCount + 1
      
@@ -626,15 +605,13 @@ basketball_slightlyAltered <- function(throwCountAcross)
      
      
      # logs for hits and for misses
-     if(hit == TRUE)
-       {
+     if(hit == TRUE){
         miss_InRow_count <- append(miss_InRow_count, miss_InRow) # logs the count of misses in a row
         
         miss_InRow = 0
         hits_InRow = hits_InRow + 1
        }
-     else if(hit == FALSE)
-       {
+     else if(hit == FALSE){
         hits_InRow_count <- append(hits_InRow_count, hits_InRow) # logs the count of hits in a row
         
         hits_InRow = 0
@@ -642,8 +619,7 @@ basketball_slightlyAltered <- function(throwCountAcross)
         }     
 
      # ends the while loop if 2 misses in a row
-     if(miss_InRow == 2)
-       {
+     if(miss_InRow == 2){
         miss_InRow_count <- append(miss_InRow_count, miss_InRow) # logs the count of misses in a row
        
         keepGoing = FALSE # stops for more throws as 2 misses has occured in a row
@@ -676,8 +652,7 @@ throwCountAcross <- list()
 
 
 # this for loop runs the function 1000 times, adding the total amount of throws for each simulation till 2 misses came in a row to a list
-for (i in 1:1000)
-{
+for (i in 1:1000){
   throwCountAcross <- basketball_slightlyAltered(throwCountAcross)
 }
 
