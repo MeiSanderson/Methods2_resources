@@ -286,20 +286,20 @@ Ages:
 
 ```{r}
 
-ages = c(10, 20, 56, 19, 89)
+ages = c(10, 20, 56, 19, 89, 26)
 
 ageCategorization = c()
 
 
 for(specificAge in 1:length(ages))
   {
-   if(specificAge < 12 && specificAge >= 0)
+   if(ages[specificAge] < 12 && ages[specificAge] >= 0)
      {
       categorization = "child"
      
       ageCategorization = append(ageCategorization, categorization)
       
-     } else if(specificAge >= 12 && specificAge <= 18)
+     } else if(ages[specificAge] >= 12 && ages[specificAge] <= 18)
       {
 
       categorization = "teenager"
@@ -307,14 +307,14 @@ for(specificAge in 1:length(ages))
       ageCategorization = append(ageCategorization, categorization)
        
       
-     } else if(specificAge >= 19 && specificAge <= 65)
+     } else if(ages[specificAge] >= 19 && ages[specificAge] <= 65)
       {
 
       categorization = "adult"
      
       ageCategorization = append(ageCategorization, categorization)
        
-     } else if(specificAge > 65)
+     } else if(ages[specificAge] > 65)
       {
 
       categorization = "senior"
@@ -324,9 +324,10 @@ for(specificAge in 1:length(ages))
      } #should i add an 'else'
 
   
-  
   }
 
+
+print(ageCategorization) # printing the resulting vector of the categorisations of people's ages
 
 
 
@@ -337,11 +338,44 @@ for(specificAge in 1:length(ages))
 (If you need to, check class 2's doc for how to write functions)
 ```{r}
 
+numbVec = c(10, 20, 56, 19, 89, 26)
+
+
+
+vecMean <- function(numbVector){
+  
+  sumVec = sum(numbVector)
+  
+  meanVec = sumVec/length(numbVector)
+  
+  return(meanVec)
+  
+}
+
+
+print( vecMean(numbVec) ) # calls the function to get the mean of the vector numbVec
+
+
 ```
 
 ### D2 Write a function named calculate_area_circle that takes the radius of a circle as its argument and returns the area of the circle. Remember, the formula to calculate the area of a circle is pi*r^2, where r is the radius of the circle.
 
 ```{r}
+
+
+calculate_area_circle <- function(radius){
+  
+  areaCircle = radius^2 * pi
+  
+  return(areaCircle)
+  
+}
+
+
+print( calculate_area_circle(3) ) # calls the function to get the area of a circle with the radius of (in this case) 3
+
+
+
 
 ```
 
@@ -349,16 +383,183 @@ for(specificAge in 1:length(ages))
 ### E1 Write a simulation to mimic the rolling of two six-sided dice. Simulate rolling the two dice 10000 times and store the sum of the dice faces for each roll. Plot a histogram of the sums to see the distribution of the total dice rolls. Calculate and print the mean and standard deviation of the rolls.
 ```{r}
 
+# resets list used for the rolling of the 2 six-sided dice
+simulationData <- list()
+
+
+# function simulating the rolling of the 2 six-sided dice and returning the results of such a roll
+diceRolls = function(){
+  
+  simulatedRolls <- sample(1:6, size = 2, replace = TRUE) # 1:6 specifying the possible views, 2 the number of items to choose, replace = true means that the same outcomes can be picked again (with replacement)
+  
+  simulationData <- unlist( append(simulationData, simulatedRolls) )
+  
+  simulationData_sum <- sum(simulationData)
+  
+  simulationData_sd <- sd(simulationData)
+  
+  #print(sd(simulationData))
+  
+  
+  return(c(simulationData_sum, simulationData_sd))
+  
+}
+
+
+# resets list for which to use for the 10000 simulations of the rolls of 2 six-sided dice
+diceRolls_sum <- list()
+diceRolls_sd <- list()
+
+# for loop simulating 10000 rolls of these 2 dice
+for(i in 1:10000){
+  
+  diceRolls_data <- diceRolls()
+  
+  # sum
+  diceRolls_sum[i] <- diceRolls_data[1]
+  
+  
+  # sd
+  diceRolls_sd[i] <-  diceRolls_data[2]
+  
+  
+}
+
+
+# - - - - - - 
+
+# plots the histogram of the sum of the simulated roll of 2 six-sided dice
+hist(unlist( diceRolls_sum ), main = "Distribution of Sum of rolls of 2 six-sided dice", xlab = "Sum of 2 dice rolls", ylab = "Frequency")
+
+# - - - - - - 
+
+# prints the  mean and standard deviation of the rolls
+
+print(unlist( diceRolls_sum )) # prints the resulting list with the results of the sum from each of the simulated roll of 2 six-sided dice
+
+print(unlist( diceRolls_sd )) # prints the resulting list with the results of the sd from each of the simulated roll of 2 six-sided dice
+
+
 ```
 
 ### E2 Consider a population that grows exponentially according to the formula \(P = P_0e^{rt}\) (the e^{rt} part is written exp(r*t) in r), where \(P_0\) is the initial population size, \(r\) is the rate of growth, and \(t\) is time in years. Simulate the growth of a population starting with 100 individuals and a growth rate of 2% per year over 50 years. Plot the population size each year.
 
 ```{r}
 
+## declaring variables
+p0 <- 100 # starting point of individuals in the population
+rateGrowth <- 1.02 # rate of growth
+
+yearsInterest <- 50 # years of interest
+
+# makes a list for populations for each year from 1 to 50, which is later made into a dictionary with each index being the year of the population size
+populationYear <- list()
+
+
+
+for (year in 1:yearsInterest) {
+  population_growth <- p0 * exp(rateGrowth * year)
+  
+  populationYear[[as.character(year)]] = round( population_growth, 1)
+  
+}
+
+
+names(populationYear) <- 1:yearsInterest # makes populationYear a dictionary by naming the elements by their corresponding year
+
+
+print(populationYear)
+
+
+
+
+
 ```
+
 ### E3 Simulate the annual returns of an investment portfolio with an average return of 7% and a standard deviation of 10%. Assume the returns follow a normal distribution. Simulate 30 years of returns and calculate the final portfolio value assuming an initial investment of $10,000. Repeat this simulation 1000 times and plot a histogram of the final portfolio values. Calculate the mean and standard deviation of the final values.
 
 ```{r}
+
+# function needs to return the finial portfolio value after 30 years - which would been adding the return from each year right?
+
+
+## declaring variables
+return_average <- 0.07 # average return
+return_sd <- 0.1 # standard deviation of return average
+
+years <- 30
+
+
+# resets list used for the rolling of the 2 six-sided dice
+simulationData <- list()
+
+
+# function simulating the rolling of the 2 six-sided dice and returning the results of such a roll
+investmentReturns = function(initialInvestment){
+  
+  
+  simulatedReturns <- rnorm(n = years, mean = return_average, sd = return_sd) # the simulated returns for 30 years
+  
+  simulationData <- unlist( append(simulationData, simulatedReturns) )
+  
+  investment <- initialInvestment
+  
+  
+  for(year in 1:years){
+    
+    investment <- investment * (1 + simulatedReturns[year]) # adds the final portfolio value for each year
+    
+  }
+  
+  finialPortfolioValue <- investment
+  
+  
+  return(finialPortfolioValue)
+  
+}
+
+
+
+
+
+finialPortfolioValue_data <- list()
+finialPortfolioValue_sim <- list()
+  
+# for loop simulating 1000 cases of final return values after 30 years
+for(i in 1:1000){
+  
+  #print(finialPortfolioValue_sim)
+  
+  finialPortfolioValue_data <- investmentReturns(10000) # stores the finial portfolio value for each simulation
+  
+  finialPortfolioValue_sim <- c(finialPortfolioValue_sim, finialPortfolioValue_data) # combines the finial portfolio value for each simulation into one list (which does become a list of list, but that it "fixed" in the next line)
+  
+  
+  #print(unlist (finialPortfolioValue_sim ) )
+  
+  
+  
+}
+
+finialPortfolioValue_sim <- unlist( finialPortfolioValue_sim )
+
+finialPortfolioValue_sim
+
+
+# - - - - - - 
+
+# plots the histogram of the sum of the simulated roll of 2 six-sided dice
+hist(finialPortfolioValue_sim, breaks = 20, main = "Distribution of final portfolio value after 30 years", xlab = "Final Portfolio Value", ylab = "Frequency")
+
+
+# - - - - - - 
+
+# calculate the mean and standard deviation of the final values
+
+paste("the mean of the final values are: ", round( mean(finialPortfolioValue_sim), 2)) # mean
+
+paste("the sd of the final values are: ", round( sd(finialPortfolioValue_sim), 2)) # sd
+
 
 ```
 
@@ -368,12 +569,44 @@ for(specificAge in 1:length(ages))
 
 ```{r}
 
+E4_xAxis <- rbinom(n = 20, 100, prob = 0.3)  # generates random numbers from a binomial distribution; simulating the number of successes
+E4_xAxis
+
+
+E4_xAxis <- dbinom(0:20, size = 20, prob = 0.3)  # calculates the probability mass function (PMF) of the binomial distribution; that is the prob of getting a specific number 
+E4_xAxis
+
+# - - - - - - 
+
+
+## both of the above could in theory be meant by the task description, but the book usually means simulating when saying graphing so most likely it refers to the first option
+
+
+# plots the barplot
+barplot(E4_xAxis, main = "Distribution of data simulated from the binomial distribution", xlab = "Binomial distribution", ylab = "Frequency")
+
+
+
+
+
 ```
 
 ### E5 Sampling from a discrete distribution - rolling a loaded die
 A loaded (or biased) die is one where the probabilities of landing on each number are not equal. Simulate rolling a loaded die 10,000 times, where the probabilities of rolling each number from 1 to 6 are given as follows: P(1) = 0.05, P(2) = 0.10, P(3) = 0.35, P(4) = 0.25, P(5) = 0.15, P(6) = 0.10. Plot a histogram of the outcomes and calculate the mean and standard deviation of the results.
 
 ```{r}
+
+## inspired by the book example of girls (+ also for twins) born
+
+loadedDieRolls <- sample( x = c(1, 2, 3, 4, 5, 6), size = 10000, replace = TRUE, prob = c(0.05, 0.1, 0.35, 0.25, 0.15, 0.1) ) # kombinatorik - with replacement; specifying x = the values to chose from,  size = the number of items to chose/give a value,  replace = a value once used can be used again,  prob = the probabiliy of the various x-values
+
+
+# - - - - - - 
+
+
+# plots the histogram of the results from rolling this loaded die
+hist(loadedDieRolls, breaks = 0:6, main = "Distribution of rolls of a loaded die", xlab = "Result of die roll (1-6)", ylab = "Frequency")
+
 
 ```
 
@@ -382,12 +615,45 @@ Assume that the heights of individuals in a population are normally distributed 
 
 ```{r}
 
+simulatedHeights <- rnorm(n = 1000, mean = 170, sd = 10) # generated sample of 1000 heights from the normally distributed heights of the population
+
+
+
+# - - - - - - 
+
+
+# plots the histogram of the generated sample of heights normally distributed
+hist(simulatedHeights, main = "Normal distribution of individual heights", xlab = "Heights (cm)", ylab = "Frequency")
+
+
+
+
+
+
 ```
 
 ### E7 Simulating coin flips - Bernoulli Distribution
 (this is something we work with on the master's hehe)
+
 Simulate flipping a fair coin 5,000 times, where the outcome of each flip is either "Heads" or "Tails" with equal probability. Calculate and print the proportion of flips that result in Heads. This exercise demonstrates sampling from a Bernoulli distribution, which is a simple case of a discrete distribution.
 ```{r}
+
+
+## makes a list of the 5000 trials storing whether it resulted in a heads of tails
+fairCoin_toss <- sample( x = c("heads", "tails"), size = 5000, replace = TRUE, prob = c(0.5, 0.5) ) # kombinatorik - with replacement; specifying x = the values to chose from,  size = the number of items to chose/give a value,  replace = a value once used can be used again,  prob = the probabiliy of the various x-values
+
+table(fairCoin_toss) # counting the number of each unique value
+
+
+# or....
+
+# counts the number of either heads or tails (in this case, we pick heads) out of the 5000 trails - the better for this specific task
+fairCoin_toss <- rbinom(n = 1, size = 5000, prob = 0.5)  # generates random numbers from a binomial distribution; simulating the number of successes
+
+paste( "this is the proportion of heads in 5000 trials: ", fairCoin_toss)
+
+
+
 
 ```
 
@@ -399,12 +665,44 @@ A note: The task is to draw/plot some probability distributions for the normal d
 The point of this task is thus for you to see what happens when you vary the mean/standard deviation and nothing else in a distribution.
 ```{r}
 
+for(i in 1:20){
+  
+  mean_rand <- rnorm(1)
+  sd_rand <- rnorm(1)
+  
+  
+  
+  simualtedNormalDistribution <- rnorm(n = 1000, mean = mean_rand, sd = abs( sd_rand )) # random values are created from the normal distribution this wasn't part of the task
+
+
+  # plots the different simulations - really the task is only asking for the red line, but i thought the blue from the simulations might be a nice added addition
+  plotting <- ggplot(data.frame(x = simualtedNormalDistribution), aes(x)) +  geom_histogram(aes(y = ..density..), bins = 30, fill = "skyblue", color = "black") + stat_function(fun = dnorm, args = list(mean = mean(simualtedNormalDistribution), sd = sd(simualtedNormalDistribution)), color = "red") + labs(title = "Histogram of Simulated Normal distributions", x = "Value", y = "Density", subtitle = paste("mean = ", round( mean_rand, 3), " and sd = ", round( abs( sd_rand ), 3)))
+  
+  print(plotting)
+  
+}
+
+
+
+
 ```
 
 #### Ex. 3.4 Probability distributions: Using a bar plot in R, graph the Poisson distribution with parameter 3.5.
 (Remember when the book says 'graph' it means simulate some data as per instructions and make a plot)
 
 ```{r}
+
+poissonDistribution <-rpois(n = 20, 3.5)	
+
+
+
+
+# plots the barplot
+barplot(poissonDistribution, main = "Distribution of data simulated from the poisson distribution", xlab = "Poisson distribution", ylab = "Frequency")
+
+# ?
+
+
 
 ```
 
