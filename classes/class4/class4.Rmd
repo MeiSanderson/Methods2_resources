@@ -41,13 +41,73 @@ The rest from the lecture's last slide.
 
 # Extra about Bayesian, if you finish early (extra = optional!)
 ## Ex. 1: Load rstanarm()
+```{r libs}
+library(pacman)
 
-## Ex. 2: Simulate data for a simple linear regression model, y = b0 + b1*X+e, where x is a predictor variable, y is the outcome, and e is the normally distributed error.
+pacman::p_load(rstanarm)
+
+```
+
+## Ex. 2: Simulate data for a simple linear regression model, y = b0 + b1*x+e, where x is a predictor variable, y is the outcome, and e is the normally distributed error.
+```{r ex2}
+
+b1 = 23
+b0 = 10
+
+n = 1000
+
+error = rnorm(n)
+
+x = seq(0, n, length.out = 1)
+x = rnorm(n)
+
+y = b0 + b1 * x + error
+
+
+myLinearReg = data.frame(x = x, y = y)
+
+plot(myLinearReg)
+
+
+
+```
+
+
+
 
 ## Ex. 3: Fit a Bayesian linear regression model using stan_glm from the rstanarm package with default priors.
+```{r ex3}
+
+formula = y ~ b0 + b1 * x + error # from before, exp. 2
+
+
+stan_glm(y ~ x, data = myLinearReg , prior = default_prior_coef(family))
+
+```
+
+
+
 
 ## Ex. 4: Explain in a few sentences what a prior is (this is difficult stuff, so light level here is totally fine)
+```{r ex4}
+
+# prior is the information we can give which says something about our data without actually being part of it
+
+```
+
+
+
 
 ## Ex. 5: Refit model using different priors for b0 and b1.
+```{r ex5}
+
+b1 = 43
+b0 = 5
 
 
+formula = y ~ b0 + b1 * x + error # from before, exp. 2
+
+
+stan_glm(y ~ x, data = myLinearReg , prior = default_prior_coef(family))
+
+```
