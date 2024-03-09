@@ -51,12 +51,14 @@ pacman::p_load(rstanarm)
 ## Ex. 2: Simulate data for a simple linear regression model, y = b0 + b1*x+e, where x is a predictor variable, y is the outcome, and e is the normally distributed error.
 ```{r ex2}
 
+set.seed(123) # for reproducibility
+
 b1 = 23
 b0 = 10
 
 n = 1000
 
-error = rnorm(n)
+error = rnorm(n, mean = 0, sd = 3)
 
 x = seq(0, n, length.out = 1)
 x = rnorm(n)
@@ -108,6 +110,6 @@ b0 = 5
 formula = y ~ b0 + b1 * x + error # from before, exp. 2
 
 
-stan_glm(y ~ x, data = myLinearReg , prior = default_prior_coef(family))
+stan_glm(y ~ x, data = myLinearReg, family = gaussian() , prior = default_prior_coef(family))
 
 ```
